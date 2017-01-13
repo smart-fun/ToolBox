@@ -107,7 +107,7 @@ public class BitmapTools {
         return null;
     }
 
-    public String getFilePathFromMediaUri(Context context, Uri contentUri) {
+    public static String getFilePathFromMediaUri(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
             String[] projection = {MediaStore.Images.Media.DATA};
