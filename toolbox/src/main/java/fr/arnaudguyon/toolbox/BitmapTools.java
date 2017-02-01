@@ -107,21 +107,28 @@ public class BitmapTools {
         return null;
     }
 
-    public static String getFilePathFromMediaUri(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] projection = {MediaStore.Images.Media.DATA};
-            cursor = context.getContentResolver().query(contentUri, projection, null, null, null);
-            if (cursor != null) {
-                int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                if (columnIndex >= 0) {
-                    cursor.moveToFirst();
-                    return cursor.getString(columnIndex);
+    public static String getFilePathFromMediaUri(@NonNull Context context, @NonNull Uri mediaUri) {
+        String scheme = mediaUri.getScheme();
+        if ("file".equals(scheme)) {
+            return mediaUri.getPath();
+        } else if ("content".equals(scheme)) {
+            Cursor cursor = null;
+            try {
+                String[] projection = {MediaStore.Images.Media.DATA};
+                cursor = context.getContentResolver().query(mediaUri, projection, null, null, null);
+                if (cursor != null) {
+                    int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                    if (columnIndex >= 0) {
+                        cursor.moveToFirst();
+                        return cursor.getString(columnIndex);
+                    }
                 }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
+            } catch (SecurityException exception) {
+                exception.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
         return null;
