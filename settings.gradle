@@ -1,1 +1,1 @@
-include ':toolbox'
+include ':toolbox', ':app'
