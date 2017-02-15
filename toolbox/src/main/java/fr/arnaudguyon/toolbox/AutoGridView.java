@@ -76,6 +76,7 @@ public class AutoGridView extends LinearLayout {
             };
             mAdapter.registerDataSetObserver(mObserver);
         }
+        refresh();
     }
 
     public void setNumColumns(int numColumns) {
