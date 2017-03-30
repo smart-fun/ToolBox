@@ -1,21 +1,26 @@
 package fr.arnaudguyon.toolbox;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by aguyon on 13.01.17.
@@ -107,6 +112,7 @@ public class BitmapTools {
         return null;
     }
 
+    // TODO: documentation: for Android >= 7, must ask for android.permission.READ_EXTERNAL_STORAGE to read the file after
     public static String getFilePathFromMediaUri(@NonNull Context context, @NonNull Uri mediaUri) {
         String scheme = mediaUri.getScheme();
         if ("file".equals(scheme)) {
@@ -134,5 +140,22 @@ public class BitmapTools {
         return null;
     }
 
+    public static File createTemporaryImageFile(Context context, String prefix) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = prefix + timeStamp;
+        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File file = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        return file;
+    }
 
+    public static void addImageToGallery(Context context, File file) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        context.sendBroadcast(mediaScanIntent);
+    }
 }
